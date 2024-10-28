@@ -1,4 +1,5 @@
 from times import time_range, compute_overlap_time
+import pytest
 
 def test_given_input():
     large = time_range("2010-01-12 10:00:00", "2010-01-12 12:00:00")
@@ -47,3 +48,8 @@ def test_end_exactly_at_start():
     expected = []
     
     assert result == expected
+
+def test_input_validation():
+    with pytest.raises(ValueError):
+        # End time before start time
+        time_range("2023-10-20 12:00:00", "2023-10-20 10:00:00")
