@@ -25,6 +25,7 @@ def test_compute_overlap_time(test_case):
 
     assert result == expected
 
+
 def test_input_validation():
     with pytest.raises(ValueError):
         # End time before start time
