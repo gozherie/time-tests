@@ -1,44 +1,26 @@
-from times import time_range, compute_overlap_time
 import pytest
+import yaml
+from times import time_range, compute_overlap_time
 
-@pytest.mark.parametrize(
-    "time_range_1_args, time_range_2_args, expected",
-    [
-        # test given inputs
-        (
-            ("2010-01-12 10:00:00", "2010-01-12 12:00:00"), 
-            ("2010-01-12 10:30:00", "2010-01-12 10:45:00", 2, 60),
-            [
-                ('2010-01-12 10:30:00', '2010-01-12 10:37:00'),
-                ('2010-01-12 10:38:00', '2010-01-12 10:45:00')
-            ]
-        ),
-        # test no overlap
-        (
-            ("2010-01-12 08:00:00", "2010-01-12 09:00:00"),
-            ("2010-01-12 10:00:00", "2010-01-12 11:00:00"),
-            []
-        ),
-        # test multiple intervals
-        (
-            ("2010-01-12 10:00:00", "2010-01-12 11:00:00", 2, 60),
-            ("2010-01-12 10:30:00", "2010-01-12 11:30:00", 2, 60),
-            [
-                ('2010-01-12 10:30:30', '2010-01-12 10:59:30')
-            ]
-        ),
-        # test end to start
-        (
-            ("2010-01-12 10:00:00", "2010-01-12 10:30:00"),
-            ("2010-01-12 10:30:00", "2010-01-12 11:00:00"),
-            []
-        ),
-    ]
-)
-def test_compute_overlap_time(time_range_1_args, time_range_2_args, expected):
-    
-    range1 = time_range(*time_range_1_args)
-    range2 = time_range(*time_range_2_args)
+# load fixture.yaml 
+def load_yaml_data():
+    with open("fixture.yaml", "r") as file:
+        return yaml.safe_load(file)
+
+# parametrization
+yaml_data = load_yaml_data()
+
+@pytest.mark.parametrize("test_case", yaml_data)
+def test_compute_overlap_time(test_case):
+    # time ranges and expected results
+    case_data = list(test_case.values())[0]
+    time_range_1 = case_data["time_range_1"]
+    time_range_2 = case_data["time_range_2"]
+    expected = [tuple(pair) for pair in case_data["expected"]]
+
+    range1 = time_range(*time_range_1)
+    range2 = time_range(*time_range_2)
+
     result = compute_overlap_time(range1, range2)
 
     assert result == expected
